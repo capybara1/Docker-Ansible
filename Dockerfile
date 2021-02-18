@@ -19,7 +19,7 @@ RUN mkdir action_plugins files handlers inventories library roles tasks template
 COPY requirements.txt ./
 COPY tasks.py ./
 RUN apt-get update -qq \
- && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass \
+ && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass vim \
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 RUN groupadd -g ${GROUP_ID} ansible \
@@ -27,7 +27,8 @@ RUN groupadd -g ${GROUP_ID} ansible \
  && usermod -aG sudo ansible \
  && chown ansible:ansible /project
 RUN echo 'ansible ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo 'export GPG_TTY=$(tty)' >> /etc/profile
 USER ansible
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash", "-l"]
 
 
