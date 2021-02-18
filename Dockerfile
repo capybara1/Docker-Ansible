@@ -2,6 +2,8 @@ FROM python:3.9-slim
 ARG VERSION
 ARG VCS_REF
 ARG BUILD_DATE
+ARG USER_ID=1000
+ARG GROUP_ID=${USER_ID}
 LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.version="$VERSION" \
       org.label-schema.maintainer="https://github.com/capybara1/" \
@@ -17,9 +19,15 @@ RUN mkdir action_plugins files handlers inventories library roles tasks template
 COPY requirements.txt ./
 COPY tasks.py ./
 RUN apt-get update -qq \
- && apt-get install -yq --no-install-recommends openssh-client sshpass gnupg2 pass \
+ && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass \
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
-ENTRYPOINT ["/usr/local/bin/invoke"]
+RUN groupadd -g ${GROUP_ID} ansible \
+ && useradd -l -m -u ${USER_ID} -g ansible -s /bin/bash ansible \
+ && usermod -aG sudo ansible \
+ && chown ansible:ansible /project
+RUN echo 'ansible ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER ansible
+ENTRYPOINT ["/bin/bash"]
 
 
