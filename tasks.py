@@ -10,9 +10,6 @@ from glob import glob
 from shutil import which
 from invoke import task
 
-DEFAULT_ARGS = {"inventories/production": "--vault-id prod@vault/pass-client.sh"}
-
-
 class FileNameAmbiguous(Exception):
     """
     Represents an error that a file could not be
@@ -103,9 +100,6 @@ def compose_command(playbook_file, inventory_path, tags, opts):
         cmd += " --diff"
     if opts["verbose"]:
         cmd += " -" + opts["verbose"] * "v"
-    default_args = DEFAULT_ARGS.get(inventory_path)
-    if default_args:
-        cmd += " " + default_args
     return cmd
 
 

@@ -18,6 +18,8 @@ WORKDIR /project
 RUN mkdir action_plugins files handlers inventories library roles tasks templates vars vault
 COPY requirements.txt ./
 COPY tasks.py ./
+COPY vault ./vault
+RUN chmod +x tasks.py vault/*
 RUN apt-get update -qq \
  && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass vim \
  && rm -rf /var/lib/apt/lists/*
