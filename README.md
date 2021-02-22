@@ -2,7 +2,14 @@
 
 Container image providing an Ansible environment for the controller
 
-## How-To use
+## Features
+
+- Supports `pass`
+  - Dynamically generate and persist secret values
+  - Obtain ansible vault password via a vault client script
+- Supports ansible kubernetes tasks
+
+## Usage
 
 Ensure local mount directories are present and sufficiently restrictive:
 
@@ -17,6 +24,16 @@ for d in .ssh .gnupg .password-store
 done
 ```
 
+The directories are used for SSH, GNUPG and [pass](https://www.passwordstore.org/).
+Using a volume allows persisting configuration accross container lifetimes.
+
+It is possible to mount existing directories, however it is required that the
+pid and gid of the user container (`ansible`) match in order to meet security
+requirements.
+The default pid and gid are 1000 respectively.
+It might be required to build a custom container image if different ids are required.
+The `Dockerfile` supports the optional arguments `USER_ID` and `GROUP_ID` for this purpose.
+
 Run a containerized bash with docker:
 
 
@@ -24,6 +41,7 @@ Run a containerized bash with docker:
 sudo docker run \
 	-it \
 	--rm \
+  -e DEFAULT_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
 	-v $PWD/requirements.yml:/project/requirements.yml:ro \
 	-v $PWD/inventories:/project/inventories:ro \
 	-v $PWD/roles:/project/roles:ro \
@@ -43,6 +61,7 @@ sudo docker run \
 sudo ctr run \
 	-t \
 	--rm \
+  --env DEFAULT_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
 	--mount type=bind,src=$PWD/requirements.yml,dst=/project/requirements.yml,options=rbind:ro \
 	--mount type=bind,src=$PWD/inventories,dst=/project/inventories,options=rbind:ro \
 	--mount type=bind,src=$PWD/roles,dst=/project/roles,options=rbind:ro \
@@ -59,7 +78,7 @@ sudo ctr run \
 Things to do next:
 
 - Add target node(s) to the known_hosts for SSH
-- Add an SSH key-pair
-- Add a GPG key
-- Init a password store for `pass`
+- Add an [SSH key-pair](https://linuxize.com/post/how-to-set-up-ssh-keys-on-ubuntu-20-04/)
+- Add a [GPG key](https://www.gnupg.org/gph/en/manual.html)
+- Init a [password store](https://www.passwordstore.org/)
 
