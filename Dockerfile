@@ -21,7 +21,7 @@ COPY tasks.py ./
 COPY vault ./vault
 RUN chmod +x tasks.py vault/*
 RUN apt-get update -qq \
- && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass vim \
+ && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass netcat vim \
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 RUN groupadd -g ${GROUP_ID} ansible \
