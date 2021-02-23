@@ -15,13 +15,29 @@ LABEL org.label-schema.schema-version="1.0" \
       org.label-schema.build-date="$BUILD_DATE" \
       org.label-schema.dockerfile="/Dockerfile"
 WORKDIR /project
-RUN mkdir action_plugins files handlers inventories library roles tasks templates vars vault
+RUN mkdir action_plugins \
+          files \
+          handlers \
+          inventories \
+          library \
+          roles \
+          tasks \
+          templates \
+          vars \
+          vault
 COPY requirements.txt ./
 COPY tasks.py ./
 COPY vault ./vault
 RUN chmod +x tasks.py vault/*
 RUN apt-get update -qq \
- && apt-get install -yq --no-install-recommends sudo openssh-client sshpass gnupg2 pass netcat vim \
+ && apt-get install -yq --no-install-recommends sudo \
+                                                openssh-client \
+                                                sshpass \
+                                                gnupg2 \
+                                                pass \
+                                                knockd \
+                                                netcat \
+                                                vim \
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 RUN groupadd -g ${GROUP_ID} ansible \
