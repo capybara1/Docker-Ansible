@@ -6,8 +6,12 @@ Container image providing an Ansible environment for the controller
 
 - Supports `pass`
   - Dynamically generate and persist secret values
-  - Obtain ansible vault password via a vault client script
+  - Obtain ansible vault password via a vault client script (`vault/pass-client.sh`)
 - Supports ansible kubernetes tasks
+
+## Details
+
+- The Working Directory is `/project`
 
 ## Usage
 
@@ -36,12 +40,11 @@ The `Dockerfile` supports the optional arguments `USER_ID` and `GROUP_ID` for th
 
 Run a containerized bash with docker:
 
-
 ```bash
 sudo docker run \
 	-it \
 	--rm \
-  -e DEFAULT_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
+	-e ANSIBLE_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
 	-v $PWD/requirements.yml:/project/requirements.yml:ro \
 	-v $PWD/inventories:/project/inventories:ro \
 	-v $PWD/roles:/project/roles:ro \
@@ -61,7 +64,7 @@ sudo docker run \
 sudo ctr run \
 	-t \
 	--rm \
-  --env DEFAULT_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
+	--env ANSIBLE_VAULT_IDENTITY_LIST="dev@/project/vault/pass-client.sh,prod@/project/vault/pass-client.sh" \
 	--mount type=bind,src=$PWD/requirements.yml,dst=/project/requirements.yml,options=rbind:ro \
 	--mount type=bind,src=$PWD/inventories,dst=/project/inventories,options=rbind:ro \
 	--mount type=bind,src=$PWD/roles,dst=/project/roles,options=rbind:ro \
