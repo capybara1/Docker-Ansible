@@ -23,12 +23,12 @@ RUN mkdir action_plugins \
           roles \
           tasks \
           templates \
-          vars \
-          vault
+          vars
+COPY docker-entrypoint.sh /
 COPY requirements.txt ./
 COPY tasks.py ./
 COPY vault ./vault
-RUN chmod +x tasks.py vault/*
+RUN chmod +x /docker-entrypoint.sh tasks.py vault/*
 RUN apt-get update -qq \
  && apt-get install -yq --no-install-recommends sudo \
                                                 openssh-client \
@@ -47,6 +47,6 @@ RUN groupadd -g ${GROUP_ID} ansible \
 RUN echo 'ansible ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN echo 'export GPG_TTY=$(tty)' >> /etc/profile
 USER ansible
-ENTRYPOINT ["/bin/bash", "-l"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 
